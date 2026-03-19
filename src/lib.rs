@@ -1,12 +1,10 @@
 // Protocol fields and constants are kept for completeness even if not yet exercised.
 #![allow(dead_code)]
 
-//! # tokio-enet
-//!
 //! A pure-Rust, async reimplementation of the [ENet](http://enet.besra.com/)
 //! reliable UDP networking library, built on **tokio** and **tracing**.
 //!
-//! ## Features
+//! # Features
 //!
 //! - **Reliable & sequenced** delivery with automatic retransmission
 //! - **Unreliable sequenced** and **unsequenced** delivery modes
@@ -16,7 +14,7 @@
 //! - `SOCK_CLOEXEC` by default (no file-descriptor leaks across `fork`/`exec`)
 //! - Optional pluggable **compression** via the [`Compressor`] trait
 //!
-//! ## Quick start
+//! # Quick start
 //!
 //! ```rust,no_run
 //! use std::time::Duration;

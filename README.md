@@ -1,8 +1,8 @@
+# tokio-enet
+
 [![CI](https://github.com/hgaiser/tokio-enet/workflows/CI/badge.svg)](https://github.com/hgaiser/tokio-enet/actions)
 [![Crates.io](https://img.shields.io/crates/v/tokio-enet.svg)](https://crates.io/crates/tokio-enet)
 [![Documentation](https://docs.rs/tokio-enet/badge.svg)](https://docs.rs/tokio-enet)
-
-# tokio-enet
 
 A pure-Rust, async reimplementation of the [ENet](http://enet.besra.com/)
 reliable UDP networking library, built on **tokio** and **tracing**.
@@ -52,4 +52,4 @@ async fn main() -> Result<(), tokio_enet::Error> {
 }
 ```
 
-License: MIT
+License: BSD-2-Clause

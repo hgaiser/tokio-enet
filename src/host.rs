@@ -49,6 +49,11 @@ pub struct HostConfig {
     pub incoming_bandwidth: u32,
     /// Outgoing bandwidth limit in bytes/sec. 0 = unlimited.
     pub outgoing_bandwidth: u32,
+    /// When all peer slots are full, accept a new incoming connection by resetting the
+    /// least-recently-active peer and reusing its slot, instead of dropping the connection.
+    /// Intended for single-client servers where a reconnecting client should immediately
+    /// take over from a stale peer that has not yet timed out. Default: false.
+    pub replace_peer_when_full: bool,
 }
 
 impl Default for HostConfig {
@@ -59,6 +64,7 @@ impl Default for HostConfig {
             channel_limit: 1,
             incoming_bandwidth: 0,
             outgoing_bandwidth: 0,
+            replace_peer_when_full: false,
         }
     }
 }
@@ -93,6 +99,8 @@ pub struct Host {
     /// Connected peer count.
     connected_peers: usize,
     duplicate_peers: usize,
+    /// Reuse a peer slot for a new connection when full (see `HostConfig`).
+    replace_peer_when_full: bool,
     /// Receive buffer.
     recv_buffer: Vec<u8>,
     /// Pending events queued for dispatch.
@@ -154,6 +162,7 @@ impl Host {
             maximum_waiting_data: HOST_DEFAULT_MAXIMUM_WAITING_DATA,
             connected_peers: 0,
             duplicate_peers: protocol::PROTOCOL_MAXIMUM_PEER_ID,
+            replace_peer_when_full: config.replace_peer_when_full,
             recv_buffer: vec![0u8; protocol::PROTOCOL_MAXIMUM_MTU as usize],
             pending_events: VecDeque::new(),
         })
@@ -753,6 +762,21 @@ impl Host {
             .position(|p| p.state == PeerState::Disconnected)
         {
             Some(idx) => idx,
+            None if self.replace_peer_when_full => {
+                // All slots are taken. Reclaim the least-recently-active peer so the new
+                // connection can take over its slot — this is what lets a reconnecting
+                // client immediately replace a stale peer that has not yet timed out.
+                let service_time = self.service_time;
+                let idx = (0..self.peers.len())
+                    .max_by_key(|&i| time::time_difference(service_time, self.peers[i].last_receive_time))
+                    .unwrap();
+                if self.peers[idx].state == PeerState::Connected {
+                    self.connected_peers = self.connected_peers.saturating_sub(1);
+                }
+                tracing::info!(peer_id = idx, "reusing least-recently-active peer slot for incoming connection");
+                self.peers[idx].reset();
+                idx
+            }
             None => {
                 tracing::warn!("no available peer slots for incoming connection");
                 return Ok(());

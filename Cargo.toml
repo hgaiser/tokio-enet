@@ -13,7 +13,7 @@ readme = "README.md"
 tokio = { version = "1", features = ["net", "time", "rt", "macros"] }
 tracing = "0.1"
 thiserror = "2"
-socket2 = { version = "0.5", features = ["all"] }
+socket2 = { version = "0.5" }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "test-util"] }

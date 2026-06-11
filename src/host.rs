@@ -768,12 +768,17 @@ impl Host {
                 // client immediately replace a stale peer that has not yet timed out.
                 let service_time = self.service_time;
                 let idx = (0..self.peers.len())
-                    .max_by_key(|&i| time::time_difference(service_time, self.peers[i].last_receive_time))
+                    .max_by_key(|&i| {
+                        time::time_difference(service_time, self.peers[i].last_receive_time)
+                    })
                     .unwrap();
                 if self.peers[idx].state == PeerState::Connected {
                     self.connected_peers = self.connected_peers.saturating_sub(1);
                 }
-                tracing::info!(peer_id = idx, "reusing least-recently-active peer slot for incoming connection");
+                tracing::info!(
+                    peer_id = idx,
+                    "reusing least-recently-active peer slot for incoming connection"
+                );
                 self.peers[idx].reset();
                 idx
             }

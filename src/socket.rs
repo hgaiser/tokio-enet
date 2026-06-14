@@ -18,11 +18,8 @@ impl EnetSocket {
         } else {
             socket2::Domain::IPV6
         };
-        let socket = socket2::Socket::new(
-            domain,
-            socket2::Type::DGRAM.cloexec(),
-            Some(socket2::Protocol::UDP),
-        )?;
+        let socket =
+            socket2::Socket::new(domain, socket2::Type::DGRAM, Some(socket2::Protocol::UDP))?;
         socket.set_nonblocking(true)?;
         socket.set_reuse_address(true)?;
         socket.set_recv_buffer_size(RECEIVE_BUFFER_SIZE)?;

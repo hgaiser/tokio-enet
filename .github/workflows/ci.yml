@@ -94,3 +94,18 @@ jobs:
 
       - name: Check for unused dependencies
         run: cargo machete
+
+  readme:
+    name: Cargo README
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-readme
+        run: cargo install cargo-readme
+
+      - name: Check if README.md is up-to-date
+        run: diff --brief <(cargo readme) README.md

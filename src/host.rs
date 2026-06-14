@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 use std::net::SocketAddr;
 use std::time::{Duration, Instant};
 
+use crate::Error;
 use crate::channel::{Channel, IncomingCommand, IncomingFragment};
 use crate::compressor::Compressor;
 use crate::packet::{Packet, PacketMode};
@@ -12,7 +13,6 @@ use crate::protocol::header::{CommandHeader, ProtocolHeader};
 use crate::protocol::{self, COMMAND_FLAG_ACKNOWLEDGE};
 use crate::socket::EnetSocket;
 use crate::time;
-use crate::Error;
 
 // Host constants matching C ENet.
 const HOST_DEFAULT_MTU: u32 = 1392;
@@ -685,15 +685,14 @@ impl Host {
 
         // Queue acknowledgment if the command requires it.
         // sent_time is guaranteed to be Some here (validated above).
-        if cmd_header.needs_acknowledge() {
-            if let Some(idx) = peer_idx {
+        if cmd_header.needs_acknowledge()
+            && let Some(idx) = peer_idx {
                 self.peers[idx].queue_acknowledgement(
                     cmd_header.channel_id,
                     cmd_header.reliable_sequence_number,
                     sent_time.unwrap(),
                 );
             }
-        }
 
         Ok(())
     }
@@ -1774,13 +1773,7 @@ impl Host {
             let mut current_size: usize = 0; // tracks body size (commands only)
 
             // Helper: compute the protocol header size for the current batch.
-            let header_size = |has_sent_time: bool| -> usize {
-                if has_sent_time {
-                    4
-                } else {
-                    2
-                }
-            };
+            let header_size = |has_sent_time: bool| -> usize { if has_sent_time { 4 } else { 2 } };
 
             // Collect all acknowledgements.
             while !self.peers[peer_idx].acknowledgements.is_empty() {

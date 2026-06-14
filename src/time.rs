@@ -86,7 +86,7 @@ mod tests {
         // TIME_OVERFLOW is just the threshold for direction detection.
         let b = u32::MAX - 99; // just before u32 overflow
         let a = 100; // just after u32 overflow
-                     // a is 200ms "after" b in wrapped time
+        // a is 200ms "after" b in wrapped time
         assert!(time_greater(a, b));
         assert!(time_less(b, a));
         assert_eq!(time_difference(a, b), 200);

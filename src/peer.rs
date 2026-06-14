@@ -1,13 +1,13 @@
 use std::collections::VecDeque;
 use std::net::SocketAddr;
 
+use crate::Error;
 use crate::channel::Channel;
 use crate::packet::{Packet, PacketMode};
 use crate::protocol::commands::Command;
 use crate::protocol::header::CommandHeader;
 use crate::protocol::{self, COMMAND_FLAG_ACKNOWLEDGE, PROTOCOL_MAXIMUM_FRAGMENT_COUNT};
 use crate::time;
-use crate::Error;
 
 /// Opaque peer identifier. Index into the host's peer array.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

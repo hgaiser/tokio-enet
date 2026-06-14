@@ -17,11 +17,7 @@ pub struct ProtocolHeader {
 impl ProtocolHeader {
     /// Size of the header in bytes (2 bytes without sent_time, 4 bytes with).
     pub fn wire_size(&self) -> usize {
-        if self.sent_time.is_some() {
-            4
-        } else {
-            2
-        }
+        if self.sent_time.is_some() { 4 } else { 2 }
     }
 
     /// Encode the header to bytes (big-endian).

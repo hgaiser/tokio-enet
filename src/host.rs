@@ -686,13 +686,14 @@ impl Host {
         // Queue acknowledgment if the command requires it.
         // sent_time is guaranteed to be Some here (validated above).
         if cmd_header.needs_acknowledge()
-            && let Some(idx) = peer_idx {
-                self.peers[idx].queue_acknowledgement(
-                    cmd_header.channel_id,
-                    cmd_header.reliable_sequence_number,
-                    sent_time.unwrap(),
-                );
-            }
+            && let Some(idx) = peer_idx
+        {
+            self.peers[idx].queue_acknowledgement(
+                cmd_header.channel_id,
+                cmd_header.reliable_sequence_number,
+                sent_time.unwrap(),
+            );
+        }
 
         Ok(())
     }

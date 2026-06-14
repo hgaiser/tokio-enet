@@ -1,6 +1,6 @@
 [package]
 name = "tokio-enet"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A pure Rust implementation of the ENet reliable UDP networking library"
 license = "BSD-2-Clause"
